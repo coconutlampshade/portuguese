@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verbos Irregulares no PPS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .container {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input {
+            padding: 8px;
+            font-size: 16px;
+            width: 200px;
+            margin: 10px 0;
+        }
+        .feedback {
+            margin-top: 10px;
+        }
+        .mistakes {
+            margin-top: 20px;
+            padding: 10px;
+            background: #fff3f3;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body onload="nextQuestion()">
+    <div class="container">
+        <h1>Verbos Irregulares no PPS</h1>
+        <div>Pontuação: <span id="score">0</span>/<span id="total">0</span></div>
+        <div>Restantes: <span id="remaining">60</span></div>
+        
+        <div class="question">
+            <p>Conjugue o verbo <strong><span id="verb">___</span></strong> no Pretérito Perfeito Simples</p>
+            <p>Pessoa: <strong><span id="person">___</span></strong></p>
+            <input type="text" id="answer" placeholder="Digite sua resposta" onkeypress="if(event.key === 'Enter') checkAnswer()">
+        </div>
+        
+        <div id="feedback" class="feedback"></div>
+        <div id="mistakes" class="mistakes" style="display:none">
+            <h3>Erros:</h3>
+            <div id="mistakesList"></div>
+        </div>
+    </div>
+
+    <script>
+       const verbs = [
+            {infinitive: 'SER/IR', eu: 'fui', tu: 'foste', 'ele/ela/você': 'foi', nós: 'fomos', 'eles/elas/vocês': 'foram'},
+            {infinitive: 'TER', eu: 'tive', tu: 'tiveste', 'ele/ela/você': 'teve', nós: 'tivemos', 'eles/elas/vocês': 'tiveram'},
+            {infinitive: 'FAZER', eu: 'fiz', tu: 'fizeste', 'ele/ela/você': 'fez', nós: 'fizemos', 'eles/elas/vocês': 'fizeram'},
+            {infinitive: 'ESTAR', eu: 'estive', tu: 'estiveste', 'ele/ela/você': 'esteve', nós: 'estivemos', 'eles/elas/vocês': 'estiveram'},
+            {infinitive: 'VIR', eu: 'vim', tu: 'vieste', 'ele/ela/você': 'veio', nós: 'viemos', 'eles/elas/vocês': 'vieram'},
+            {infinitive: 'VER', eu: 'vi', tu: 'viste', 'ele/ela/você': 'viu', nós: 'vimos', 'eles/elas/vocês': 'viram'},
+            {infinitive: 'PÔR', eu: 'pus', tu: 'puseste', 'ele/ela/você': 'pôs', nós: 'pusemos', 'eles/elas/vocês': 'puseram'},
+            {infinitive: 'QUERER', eu: 'quis', tu: 'quiseste', 'ele/ela/você': 'quis', nós: 'quisemos', 'eles/elas/vocês': 'quiseram'},
+            {infinitive: 'DAR', eu: 'dei', tu: 'deste', 'ele/ela/você': 'deu', nós: 'demos', 'eles/elas/vocês': 'deram'},
+            {infinitive: 'DIZER', eu: 'disse', tu: 'disseste', 'ele/ela/você': 'disse', nós: 'dissemos', 'eles/elas/vocês': 'disseram'},
+            {infinitive: 'SABER', eu: 'soube', tu: 'soubeste', 'ele/ela/você': 'soube', nós: 'soubemos', 'eles/elas/vocês': 'souberam'},
+            {infinitive: 'PODER', eu: 'pude', tu: 'pudeste', 'ele/ela/você': 'pôde', nós: 'pudemos', 'eles/elas/vocês': 'puderam'},
+            {infinitive: 'FAZER', eu: 'fiz', tu: 'fizeste', 'ele/ela/você': 'fez', nós: 'fizemos', 'eles/elas/vocês': 'fizeram'},
+            {infinitive: 'FICAR', eu: 'fiquei', tu: 'ficaste', 'ele/ela/você': 'ficou', nós: 'ficamos', 'eles/elas/vocês': 'ficaram'},
+            {infinitive: 'CABER', eu: 'coube', tu: 'coubeste', 'ele/ela/você': 'coube', nós: 'coubemos', 'eles/elas/vocês': 'couberam'}
+        ];
+
+        const persons = ['eu', 'tu', 'ele/ela/você', 'nós', 'eles/elas/vocês'];
+        const usedCombinations = new Set();
+        const totalCombinations = verbs.length * persons.length;
+
+        let currentVerb;
+        let currentPerson;
+        let score = 0;
+        let total = 0;
+        let mistakes = [];
+        let checked = false;
+
+        function getUnusedCombination() {
+            if (usedCombinations.size >= totalCombinations) {
+                alert('Você completou todos os verbos! Começando novamente.');
+                usedCombinations.clear();
+                score = 0;
+                total = 0;
+                mistakes = [];
+                document.getElementById('score').textContent = '0';
+                document.getElementById('total').textContent = '0';
+                document.getElementById('mistakes').style.display = 'none';
+            }
+
+            let verb, person;
+            do {
+                verb = verbs[Math.floor(Math.random() * verbs.length)];
+                person = persons[Math.floor(Math.random() * persons.length)];
+            } while (usedCombinations.has(`${verb.infinitive}-${person}`));
+
+            usedCombinations.add(`${verb.infinitive}-${person}`);
+            return [verb, person];
+        }
+
+        function nextQuestion() {
+            [currentVerb, currentPerson] = getUnusedCombination();
+            
+            document.getElementById('verb').textContent = currentVerb.infinitive;
+            document.getElementById('person').textContent = currentPerson;
+            document.getElementById('answer').value = '';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('remaining').textContent = totalCombinations - usedCombinations.size;
+            document.getElementById('answer').focus();
+            checked = false;
+        }
+
+        function checkAnswer() {
+            if (checked) {
+                nextQuestion();
+                return;
+            }
+
+            const answer = document.getElementById('answer').value.toLowerCase().trim();
+            const correct = currentVerb[currentPerson].toLowerCase();
+            
+            if (answer === correct) {
+                document.getElementById('feedback').innerHTML = 'Correto! ✓<br>Pressione Enter para continuar';
+                document.getElementById('feedback').style.color = 'green';
+                score++;
+            } else {
+                document.getElementById('feedback').innerHTML = `Incorreto. A resposta correta é: ${correct}<br>Pressione Enter para continuar`;
+                document.getElementById('feedback').style.color = 'red';
+                mistakes.push(`${currentVerb.infinitive} (${currentPerson}): ${answer} → ${correct}`);
+                updateMistakesList();
+            }
+            
+            total++;
+            document.getElementById('score').textContent = score;
+            document.getElementById('total').textContent = total;
+            checked = true;
+        }
+
+        function updateMistakesList() {
+            const mistakesDiv = document.getElementById('mistakes');
+            const mistakesList = document.getElementById('mistakesList');
+            if (mistakes.length > 0) {
+                mistakesDiv.style.display = 'block';
+                mistakesList.innerHTML = mistakes.map(mistake => `<div>${mistake}</div>`).join('');
+            }
+        }
+    </script>
+</body>
+</html>
