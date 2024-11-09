@@ -67,7 +67,6 @@
             {infinitive: 'DIZER', eu: 'disse', tu: 'disseste', 'ele/ela/você': 'disse', nós: 'dissemos', 'eles/elas/vocês': 'disseram'},
             {infinitive: 'SABER', eu: 'soube', tu: 'soubeste', 'ele/ela/você': 'soube', nós: 'soubemos', 'eles/elas/vocês': 'souberam'},
             {infinitive: 'PODER', eu: 'pude', tu: 'pudeste', 'ele/ela/você': 'pôde', nós: 'pudemos', 'eles/elas/vocês': 'puderam'},
-            {infinitive: 'FAZER', eu: 'fiz', tu: 'fizeste', 'ele/ela/você': 'fez', nós: 'fizemos', 'eles/elas/vocês': 'fizeram'},
             {infinitive: 'FICAR', eu: 'fiquei', tu: 'ficaste', 'ele/ela/você': 'ficou', nós: 'ficamos', 'eles/elas/vocês': 'ficaram'},
             {infinitive: 'CABER', eu: 'coube', tu: 'coubeste', 'ele/ela/você': 'coube', nós: 'coubemos', 'eles/elas/vocês': 'couberam'}
         ];
@@ -89,10 +88,8 @@
                 usedCombinations.clear();
                 score = 0;
                 total = 0;
-                mistakes = [];
                 document.getElementById('score').textContent = '0';
                 document.getElementById('total').textContent = '0';
-                document.getElementById('mistakes').style.display = 'none';
             }
 
             let verb, person;
