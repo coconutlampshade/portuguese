@@ -36,7 +36,11 @@
 </head>
 <body onload="nextQuestion()">
     <div class="container">
-        <h1>Verbos Irregulares no PPS</h1>
+        <h1>Verbos Irregulares</h1>
+        <select id="tenseSelector" onchange="changeTense()">
+            <option value="pps">Pretérito Perfeito Simples</option>
+            <option value="presente">Presente</option>
+        </select>
         <div>Pontuação: <span id="score">0</span>/<span id="total">0</span></div>
         <div>Restantes: <span id="remaining">60</span></div>
         
@@ -54,7 +58,7 @@
     </div>
 
     <script>
-       const verbs = [
+       const verbsPPS = [
             {infinitive: 'SER/IR', eu: 'fui', tu: 'foste', 'ele/ela/você': 'foi', nós: 'fomos', 'eles/elas/vocês': 'foram'},
             {infinitive: 'TER', eu: 'tive', tu: 'tiveste', 'ele/ela/você': 'teve', nós: 'tivemos', 'eles/elas/vocês': 'tiveram'},
             {infinitive: 'FAZER', eu: 'fiz', tu: 'fizeste', 'ele/ela/você': 'fez', nós: 'fizemos', 'eles/elas/vocês': 'fizeram'},
@@ -74,16 +78,54 @@
             {infinitive: 'PERDER', eu: 'perdi', tu: 'perdeste', 'ele/ela/você': 'perdeu', nós: 'perdemos', 'eles/elas/vocês': 'perderam'}
         ];
 
+        const verbsPresente = [
+            {infinitive: 'TER', eu: 'tenho', tu: 'tens', 'ele/ela/você': 'tem', nós: 'temos', 'eles/elas/vocês': 'têm'},
+            {infinitive: 'VIR', eu: 'venho', tu: 'vens', 'ele/ela/você': 'vem', nós: 'vimos', 'eles/elas/vocês': 'vêm'},
+            {infinitive: 'VER', eu: 'vejo', tu: 'vês', 'ele/ela/você': 'vê', nós: 'vemos', 'eles/elas/vocês': 'veem'},
+            {infinitive: 'PÔR', eu: 'ponho', tu: 'pões', 'ele/ela/você': 'põe', nós: 'pomos', 'eles/elas/vocês': 'põem'},
+            {infinitive: 'PODER', eu: 'posso', tu: 'podes', 'ele/ela/você': 'pode', nós: 'podemos', 'eles/elas/vocês': 'podem'},
+            {infinitive: 'FICAR', eu: 'fico', tu: 'ficas', 'ele/ela/você': 'fica', nós: 'ficamos', 'eles/elas/vocês': 'ficam'},
+            {infinitive: 'SER', eu: 'sou', tu: 'és', 'ele/ela/você': 'é', nós: 'somos', 'eles/elas/vocês': 'são'},
+            {infinitive: 'IR', eu: 'vou', tu: 'vais', 'ele/ela/você': 'vai', nós: 'vamos', 'eles/elas/vocês': 'vão'},
+            {infinitive: 'DAR', eu: 'dou', tu: 'dás', 'ele/ela/você': 'dá', nós: 'damos', 'eles/elas/vocês': 'dão'},
+            {infinitive: 'DIZER', eu: 'digo', tu: 'dizes', 'ele/ela/você': 'diz', nós: 'dizemos', 'eles/elas/vocês': 'dizem'},
+            {infinitive: 'ESTAR', eu: 'estou', tu: 'estás', 'ele/ela/você': 'está', nós: 'estamos', 'eles/elas/vocês': 'estão'},
+            {infinitive: 'FAZER', eu: 'faço', tu: 'fazes', 'ele/ela/você': 'faz', nós: 'fazemos', 'eles/elas/vocês': 'fazem'},
+            {infinitive: 'TRAZER', eu: 'trago', tu: 'trazes', 'ele/ela/você': 'traz', nós: 'trazemos', 'eles/elas/vocês': 'trazem'},
+            {infinitive: 'LER', eu: 'leio', tu: 'lês', 'ele/ela/você': 'lê', nós: 'lemos', 'eles/elas/vocês': 'leem'},
+            {infinitive: 'OUVIR', eu: 'ouço', tu: 'ouves', 'ele/ela/você': 'ouve', nós: 'ouvimos', 'eles/elas/vocês': 'ouvem'},
+            {infinitive: 'QUERER', eu: 'quero', tu: 'queres', 'ele/ela/você': 'quer', nós: 'queremos', 'eles/elas/vocês': 'querem'},
+            {infinitive: 'SABER', eu: 'sei', tu: 'sabes', 'ele/ela/você': 'sabe', nós: 'sabemos', 'eles/elas/vocês': 'sabem'}
+        ];
+
         const persons = ['eu', 'tu', 'ele/ela/você', 'nós', 'eles/elas/vocês'];
         const usedCombinations = new Set();
-        const totalCombinations = verbs.length * persons.length;
+        const totalCombinations = verbsPPS.length * persons.length;
 
+        let currentVerbs = verbsPPS;
         let currentVerb;
         let currentPerson;
         let score = 0;
         let total = 0;
         let mistakes = [];
         let checked = false;
+
+        function changeTense() {
+            const tense = document.getElementById('tenseSelector').value;
+            currentVerbs = tense === 'pps' ? verbsPPS : verbsPresente;
+            
+            // Reset the game
+            usedCombinations.clear();
+            score = 0;
+            total = 0;
+            mistakes = [];
+            document.getElementById('score').textContent = '0';
+            document.getElementById('total').textContent = '0';
+            document.getElementById('mistakes').style.display = 'none';
+            document.getElementById('mistakesList').innerHTML = '';
+            
+            nextQuestion();
+        }
 
         function getUnusedCombination() {
             if (usedCombinations.size >= totalCombinations) {
@@ -97,7 +139,7 @@
 
             let verb, person;
             do {
-                verb = verbs[Math.floor(Math.random() * verbs.length)];
+                verb = currentVerbs[Math.floor(Math.random() * currentVerbs.length)];
                 person = persons[Math.floor(Math.random() * persons.length)];
             } while (usedCombinations.has(`${verb.infinitive}-${person}`));
 
