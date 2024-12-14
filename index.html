@@ -41,8 +41,10 @@
             <option value="pps">Pretérito Perfeito Simples</option>
             <option value="presente">Presente</option>
         </select>
-        <div>Pontuação: <span id="score">0</span>/<span id="total">0</span></div>
-        <div>Restantes: <span id="remaining">60</span></div>
+        <div>Correct: <span id="score">0</span></div>
+        <div>Incorrect: <span id="incorrect">0</span></div>
+        <div>Percent correct: <span id="percent">0</span>%</div>
+        <div>Remaining: <span id="remaining">60</span></div>
         
         <div class="question">
             <p>Conjugue o verbo <strong><span id="verb">___</span></strong> no Pretérito Perfeito Simples</p>
@@ -58,44 +60,44 @@
     </div>
 
     <script>
-       const verbsPPS = [
-            {infinitive: 'SER/IR', eu: 'fui', tu: 'foste', 'ele/ela/você': 'foi', nós: 'fomos', 'eles/elas/vocês': 'foram'},
-            {infinitive: 'TER', eu: 'tive', tu: 'tiveste', 'ele/ela/você': 'teve', nós: 'tivemos', 'eles/elas/vocês': 'tiveram'},
-            {infinitive: 'FAZER', eu: 'fiz', tu: 'fizeste', 'ele/ela/você': 'fez', nós: 'fizemos', 'eles/elas/vocês': 'fizeram'},
-            {infinitive: 'ESTAR', eu: 'estive', tu: 'estiveste', 'ele/ela/você': 'esteve', nós: 'estivemos', 'eles/elas/vocês': 'estiveram'},
-            {infinitive: 'VIR', eu: 'vim', tu: 'vieste', 'ele/ela/você': 'veio', nós: 'viemos', 'eles/elas/vocês': 'vieram'},
-            {infinitive: 'VER', eu: 'vi', tu: 'viste', 'ele/ela/você': 'viu', nós: 'vimos', 'eles/elas/vocês': 'viram'},
-            {infinitive: 'PÔR', eu: 'pus', tu: 'puseste', 'ele/ela/você': 'pôs', nós: 'pusemos', 'eles/elas/vocês': 'puseram'},
-            {infinitive: 'QUERER', eu: 'quis', tu: 'quiseste', 'ele/ela/você': 'quis', nós: 'quisemos', 'eles/elas/vocês': 'quiseram'},
-            {infinitive: 'DAR', eu: 'dei', tu: 'deste', 'ele/ela/você': 'deu', nós: 'demos', 'eles/elas/vocês': 'deram'},
-            {infinitive: 'DIZER', eu: 'disse', tu: 'disseste', 'ele/ela/você': 'disse', nós: 'dissemos', 'eles/elas/vocês': 'disseram'},
-            {infinitive: 'SABER', eu: 'soube', tu: 'soubeste', 'ele/ela/você': 'soube', nós: 'soubemos', 'eles/elas/vocês': 'souberam'},
-            {infinitive: 'PODER', eu: 'pude', tu: 'pudeste', 'ele/ela/você': 'pôde', nós: 'pudemos', 'eles/elas/vocês': 'puderam'},
-            {infinitive: 'FICAR', eu: 'fiquei', tu: 'ficaste', 'ele/ela/você': 'ficou', nós: 'ficamos', 'eles/elas/vocês': 'ficaram'},
-            {infinitive: 'CABER', eu: 'coube', tu: 'coubeste', 'ele/ela/você': 'coube', nós: 'coubemos', 'eles/elas/vocês': 'couberam'},
-            {infinitive: 'TRAZER', eu: 'trouxe', tu: 'trouxeste', 'ele/ela/você': 'trouxe', nós: 'trouxemos', 'eles/elas/vocês': 'trouxeram'},
-            {infinitive: 'HAVER', eu: 'houve', tu: 'houveste', 'ele/ela/você': 'houve', nós: 'houvemos', 'eles/elas/vocês': 'houveram'},
-            {infinitive: 'PERDER', eu: 'perdi', tu: 'perdeste', 'ele/ela/você': 'perdeu', nós: 'perdemos', 'eles/elas/vocês': 'perderam'}
+        const verbsPPS = [
+            {infinitive: 'SER/IR', eu: 'fui', tu: 'foste', 'ele/ela/você': 'foi', nós: 'fomos', 'eles/elas/vocês': 'foram', definition: 'to be/to go'},
+            {infinitive: 'TER', eu: 'tive', tu: 'tiveste', 'ele/ela/você': 'teve', nós: 'tivemos', 'eles/elas/vocês': 'tiveram', definition: 'to have'},
+            {infinitive: 'FAZER', eu: 'fiz', tu: 'fizeste', 'ele/ela/você': 'fez', nós: 'fizemos', 'eles/elas/vocês': 'fizeram', definition: 'to do/to make'},
+            {infinitive: 'ESTAR', eu: 'estive', tu: 'estiveste', 'ele/ela/você': 'esteve', nós: 'estivemos', 'eles/elas/vocês': 'estiveram', definition: 'to be (temporary)'},
+            {infinitive: 'VIR', eu: 'vim', tu: 'vieste', 'ele/ela/você': 'veio', nós: 'viemos', 'eles/elas/vocês': 'vieram', definition: 'to come'},
+            {infinitive: 'VER', eu: 'vi', tu: 'viste', 'ele/ela/você': 'viu', nós: 'vimos', 'eles/elas/vocês': 'viram', definition: 'to see'},
+            {infinitive: 'PÔR', eu: 'pus', tu: 'puseste', 'ele/ela/você': 'pôs', nós: 'pusemos', 'eles/elas/vocês': 'puseram', definition: 'to put'},
+            {infinitive: 'QUERER', eu: 'quis', tu: 'quiseste', 'ele/ela/você': 'quis', nós: 'quisemos', 'eles/elas/vocês': 'quiseram', definition: 'to want'},
+            {infinitive: 'DAR', eu: 'dei', tu: 'deste', 'ele/ela/você': 'deu', nós: 'demos', 'eles/elas/vocês': 'deram', definition: 'to give'},
+            {infinitive: 'DIZER', eu: 'disse', tu: 'disseste', 'ele/ela/você': 'disse', nós: 'dissemos', 'eles/elas/vocês': 'disseram', definition: 'to say'},
+            {infinitive: 'SABER', eu: 'soube', tu: 'soubeste', 'ele/ela/você': 'soube', nós: 'soubemos', 'eles/elas/vocês': 'souberam', definition: 'to know'},
+            {infinitive: 'PODER', eu: 'pude', tu: 'pudeste', 'ele/ela/você': 'pôde', nós: 'pudemos', 'eles/elas/vocês': 'puderam', definition: 'to be able to'},
+            {infinitive: 'FICAR', eu: 'fiquei', tu: 'ficaste', 'ele/ela/você': 'ficou', nós: 'ficamos', 'eles/elas/vocês': 'ficaram', definition: 'to stay'},
+            {infinitive: 'CABER', eu: 'coube', tu: 'coubeste', 'ele/ela/você': 'coube', nós: 'coubemos', 'eles/elas/vocês': 'couberam', definition: 'to fit'},
+            {infinitive: 'TRAZER', eu: 'trouxe', tu: 'trouxeste', 'ele/ela/você': 'trouxe', nós: 'trouxemos', 'eles/elas/vocês': 'trouxeram', definition: 'to bring'},
+            {infinitive: 'HAVER', eu: 'houve', tu: 'houveste', 'ele/ela/você': 'houve', nós: 'houvemos', 'eles/elas/vocês': 'houveram', definition: 'there to be'},
+            {infinitive: 'PERDER', eu: 'perdi', tu: 'perdeste', 'ele/ela/você': 'perdeu', nós: 'perdemos', 'eles/elas/vocês': 'perderam', definition: 'to lose'}
         ];
 
         const verbsPresente = [
-            {infinitive: 'TER', eu: 'tenho', tu: 'tens', 'ele/ela/você': 'tem', nós: 'temos', 'eles/elas/vocês': 'têm'},
-            {infinitive: 'VIR', eu: 'venho', tu: 'vens', 'ele/ela/você': 'vem', nós: 'vimos', 'eles/elas/vocês': 'vêm'},
-            {infinitive: 'VER', eu: 'vejo', tu: 'vês', 'ele/ela/você': 'vê', nós: 'vemos', 'eles/elas/vocês': 'veem'},
-            {infinitive: 'PÔR', eu: 'ponho', tu: 'pões', 'ele/ela/você': 'põe', nós: 'pomos', 'eles/elas/vocês': 'põem'},
-            {infinitive: 'PODER', eu: 'posso', tu: 'podes', 'ele/ela/você': 'pode', nós: 'podemos', 'eles/elas/vocês': 'podem'},
-            {infinitive: 'FICAR', eu: 'fico', tu: 'ficas', 'ele/ela/você': 'fica', nós: 'ficamos', 'eles/elas/vocês': 'ficam'},
-            {infinitive: 'SER', eu: 'sou', tu: 'és', 'ele/ela/você': 'é', nós: 'somos', 'eles/elas/vocês': 'são'},
-            {infinitive: 'IR', eu: 'vou', tu: 'vais', 'ele/ela/você': 'vai', nós: 'vamos', 'eles/elas/vocês': 'vão'},
-            {infinitive: 'DAR', eu: 'dou', tu: 'dás', 'ele/ela/você': 'dá', nós: 'damos', 'eles/elas/vocês': 'dão'},
-            {infinitive: 'DIZER', eu: 'digo', tu: 'dizes', 'ele/ela/você': 'diz', nós: 'dizemos', 'eles/elas/vocês': 'dizem'},
-            {infinitive: 'ESTAR', eu: 'estou', tu: 'estás', 'ele/ela/você': 'está', nós: 'estamos', 'eles/elas/vocês': 'estão'},
-            {infinitive: 'FAZER', eu: 'faço', tu: 'fazes', 'ele/ela/você': 'faz', nós: 'fazemos', 'eles/elas/vocês': 'fazem'},
-            {infinitive: 'TRAZER', eu: 'trago', tu: 'trazes', 'ele/ela/você': 'traz', nós: 'trazemos', 'eles/elas/vocês': 'trazem'},
-            {infinitive: 'LER', eu: 'leio', tu: 'lês', 'ele/ela/você': 'lê', nós: 'lemos', 'eles/elas/vocês': 'leem'},
-            {infinitive: 'OUVIR', eu: 'ouço', tu: 'ouves', 'ele/ela/você': 'ouve', nós: 'ouvimos', 'eles/elas/vocês': 'ouvem'},
-            {infinitive: 'QUERER', eu: 'quero', tu: 'queres', 'ele/ela/você': 'quer', nós: 'queremos', 'eles/elas/vocês': 'querem'},
-            {infinitive: 'SABER', eu: 'sei', tu: 'sabes', 'ele/ela/você': 'sabe', nós: 'sabemos', 'eles/elas/vocês': 'sabem'}
+            {infinitive: 'TER', eu: 'tenho', tu: 'tens', 'ele/ela/você': 'tem', nós: 'temos', 'eles/elas/vocês': 'têm', definition: 'to have'},
+            {infinitive: 'VIR', eu: 'venho', tu: 'vens', 'ele/ela/você': 'vem', nós: 'vimos', 'eles/elas/vocês': 'vêm', definition: 'to come'},
+            {infinitive: 'VER', eu: 'vejo', tu: 'vês', 'ele/ela/você': 'vê', nós: 'vemos', 'eles/elas/vocês': 'veem', definition: 'to see'},
+            {infinitive: 'PÔR', eu: 'ponho', tu: 'pões', 'ele/ela/você': 'põe', nós: 'pomos', 'eles/elas/vocês': 'põem', definition: 'to put'},
+            {infinitive: 'PODER', eu: 'posso', tu: 'podes', 'ele/ela/você': 'pode', nós: 'podemos', 'eles/elas/vocês': 'podem', definition: 'to be able to'},
+            {infinitive: 'FICAR', eu: 'fico', tu: 'ficas', 'ele/ela/você': 'fica', nós: 'ficamos', 'eles/elas/vocês': 'ficam', definition: 'to stay'},
+            {infinitive: 'SER', eu: 'sou', tu: 'és', 'ele/ela/você': 'é', nós: 'somos', 'eles/elas/vocês': 'são', definition: 'to be'},
+            {infinitive: 'IR', eu: 'vou', tu: 'vais', 'ele/ela/você': 'vai', nós: 'vamos', 'eles/elas/vocês': 'vão', definition: 'to go'},
+            {infinitive: 'DAR', eu: 'dou', tu: 'dás', 'ele/ela/você': 'dá', nós: 'damos', 'eles/elas/vocês': 'dão', definition: 'to give'},
+            {infinitive: 'DIZER', eu: 'digo', tu: 'dizes', 'ele/ela/você': 'diz', nós: 'dizemos', 'eles/elas/vocês': 'dizem', definition: 'to say'},
+            {infinitive: 'ESTAR', eu: 'estou', tu: 'estás', 'ele/ela/você': 'está', nós: 'estamos', 'eles/elas/vocês': 'estão', definition: 'to be (temporary)'},
+            {infinitive: 'FAZER', eu: 'faço', tu: 'fazes', 'ele/ela/você': 'faz', nós: 'fazemos', 'eles/elas/vocês': 'fazem', definition: 'to do/to make'},
+            {infinitive: 'TRAZER', eu: 'trago', tu: 'trazes', 'ele/ela/você': 'traz', nós: 'trazemos', 'eles/elas/vocês': 'trazem', definition: 'to bring'},
+            {infinitive: 'LER', eu: 'leio', tu: 'lês', 'ele/ela/você': 'lê', nós: 'lemos', 'eles/elas/vocês': 'leem', definition: 'to read'},
+            {infinitive: 'OUVIR', eu: 'ouço', tu: 'ouves', 'ele/ela/você': 'ouve', nós: 'ouvimos', 'eles/elas/vocês': 'ouvem', definition: 'to hear'},
+            {infinitive: 'QUERER', eu: 'quero', tu: 'queres', 'ele/ela/você': 'quer', nós: 'queremos', 'eles/elas/vocês': 'querem', definition: 'to want'},
+            {infinitive: 'SABER', eu: 'sei', tu: 'sabes', 'ele/ela/você': 'sabe', nós: 'sabemos', 'eles/elas/vocês': 'sabem', definition: 'to know'}
         ];
 
         const persons = ['eu', 'tu', 'ele/ela/você', 'nós', 'eles/elas/vocês'];
@@ -114,13 +116,11 @@
             const tense = document.getElementById('tenseSelector').value;
             currentVerbs = tense === 'pps' ? verbsPPS : verbsPresente;
             
-            // Reset the game
             usedCombinations.clear();
             score = 0;
             total = 0;
             mistakes = [];
-            document.getElementById('score').textContent = '0';
-            document.getElementById('total').textContent = '0';
+            updateStats();
             document.getElementById('mistakes').style.display = 'none';
             document.getElementById('mistakesList').innerHTML = '';
             
@@ -159,6 +159,16 @@
             checked = false;
         }
 
+        function updateStats() {
+            const incorrectCount = total - score;
+            const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('incorrect').textContent = incorrectCount;
+            document.getElementById('percent').textContent = percentage;
+            document.getElementById('remaining').textContent = totalCombinations - usedCombinations.size;
+        }
+
         function checkAnswer() {
             if (checked) {
                 nextQuestion();
@@ -169,19 +179,24 @@
             const correct = currentVerb[currentPerson].toLowerCase();
             
             if (answer === correct) {
-                document.getElementById('feedback').innerHTML = 'Correto! ✓<br>Pressione Enter para continuar';
+                document.getElementById('feedback').innerHTML = 
+                    `Correto! ✓<br>
+                    Definição: ${currentVerb.definition}<br>
+                    Pressione Enter para continuar`;
                 document.getElementById('feedback').style.color = 'green';
                 score++;
             } else {
-                document.getElementById('feedback').innerHTML = `Incorreto. A resposta correta é: ${correct}<br>Pressione Enter para continuar`;
+                document.getElementById('feedback').innerHTML = 
+                    `Incorreto. A resposta correta é: ${correct}<br>
+                    Definição: ${currentVerb.definition}<br>
+                    Pressione Enter para continuar`;
                 document.getElementById('feedback').style.color = 'red';
                 mistakes.push(`${currentVerb.infinitive} (${currentPerson}): ${answer} → ${correct}`);
                 updateMistakesList();
             }
             
             total++;
-            document.getElementById('score').textContent = score;
-            document.getElementById('total').textContent = totalCombinations;
+            updateStats();
             checked = true;
         }
 
