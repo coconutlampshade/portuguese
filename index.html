@@ -3,58 +3,367 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verbos Irregulares no PPS</title>
+    <title>Portuguese Verb Trainer</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
+        :root {
+            --primary-color: #2196F3;
+            --success-color: #4CAF50;
+            --error-color: #f44336;
+            --background-color: #f5f5f5;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #ddd;
+            --animation-duration: 0.3s;
         }
+
+        [data-theme="dark"] {
+            --primary-color: #90CAF9;
+            --success-color: #81C784;
+            --error-color: #E57373;
+            --background-color: #121212;
+            --card-color: #1E1E1E;
+            --text-color: #E0E0E0;
+            --border-color: #333;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-10px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            transition: background-color var(--animation-duration),
+                        color var(--animation-duration);
+        }
+
         .container {
-            background: #f9f9f9;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background: var(--card-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            animation: fadeIn var(--animation-duration) ease;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--border-color);
+            z-index: 1000;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0;
+            transition: width var(--animation-duration) ease;
+        }
+
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: var(--card-color);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform var(--animation-duration) ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* Streak Counter */
+        .streak-counter {
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: var(--card-color);
+            border-radius: 8px;
+            border: 1px solid var(--primary-color);
+            animation: slideIn var(--animation-duration) ease;
+        }
+
+        .streak-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* Question Section */
+        .question-card {
+            background: var(--card-color);
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            animation: fadeIn var(--animation-duration) ease;
+        }
+
+        .verb-display {
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        .person-display {
+            text-align: center;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            opacity: 0.9;
+        }
+
+        /* Input Section */
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--card-color);
+            color: var(--text-color);
+            transition: all var(--animation-duration) ease;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+
+        /* Feedback Section */
+        .feedback {
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        input {
-            padding: 8px;
-            font-size: 16px;
-            width: 200px;
-            margin: 10px 0;
-        }
-        .feedback {
-            margin-top: 10px;
-        }
-        .mistakes {
             margin-top: 20px;
+            text-align: center;
+            animation: fadeIn var(--animation-duration) ease;
+        }
+
+        .feedback-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .feedback-icon {
+            font-size: 2em;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .feedback.correct .feedback-icon {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .feedback.incorrect .feedback-icon {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .feedback-text {
+            text-align: left;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .theme-button {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color var(--animation-duration);
+        }
+
+        .theme-button:hover {
+            background-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .light-icon,
+        [data-theme="light"] .dark-icon {
+            display: none;
+        }
+
+        /* Tense Selector */
+        select {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            background-color: var(--card-color);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all var(--animation-duration) ease;
+        }
+
+        select:hover {
+            background-color: var(--background-color);
+        }
+
+        /* Mistakes Section */
+        .mistakes {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--card-color);
+            border-radius: 8px;
+            border: 1px solid var(--error-color);
+            animation: slideIn var(--animation-duration) ease;
+        }
+
+        .mistakes h3 {
+            color: var(--error-color);
+            margin-top: 0;
+        }
+
+        .mistake-item {
             padding: 10px;
-            background: #fff3f3;
-            border-radius: 4px;
+            border-bottom: 1px solid var(--border-color);
+            animation: fadeIn var(--animation-duration) ease;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .stat-card {
+                padding: 10px;
+            }
+
+            .verb-display {
+                font-size: 2em;
+            }
         }
     </style>
 </head>
-<body onload="nextQuestion()">
+<body onload="initTheme(); nextQuestion()">
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
     <div class="container">
-        <h1>Verbos Irregulares</h1>
+        <div class="theme-toggle">
+            <button id="themeToggle" class="theme-button">
+                <span class="light-icon">☀️</span>
+                <span class="dark-icon">🌙</span>
+            </button>
+        </div>
+
+        <h1>Portuguese Verb Trainer</h1>
+        
+        <div class="streak-counter">
+            Current Streak: <span id="streak" class="streak-value">0</span>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div>Correct</div>
+                <div class="stat-value" id="score">0</div>
+            </div>
+            <div class="stat-card">
+                <div>Incorrect</div>
+                <div class="stat-value" id="incorrect">0</div>
+            </div>
+            <div class="stat-card">
+                <div>Percent</div>
+                <div class="stat-value" id="percent">0%</div>
+            </div>
+            <div class="stat-card">
+                <div>Remaining</div>
+                <div class="stat-value" id="remaining">60</div>
+            </div>
+        </div>
+
         <select id="tenseSelector" onchange="changeTense()">
             <option value="pps">Pretérito Perfeito Simples</option>
             <option value="presente">Presente</option>
         </select>
-        <div>Correct: <span id="score">0</span></div>
-        <div>Incorrect: <span id="incorrect">0</span></div>
-        <div>Percent correct: <span id="percent">0</span>%</div>
-        <div>Remaining: <span id="remaining">60</span></div>
-        
-        <div class="question">
-            <p>Conjugue o verbo <strong><span id="verb">___</span></strong> no Pretérito Perfeito Simples</p>
-            <p>Pessoa: <strong><span id="person">___</span></strong></p>
-            <input type="text" id="answer" placeholder="Digite sua resposta" onkeypress="if(event.key === 'Enter') checkAnswer()">
+
+        <div class="question-card">
+            <div class="verb-display" id="verb">___</div>
+            <div class="person-display" id="person">___</div>
+            <div class="input-wrapper">
+                <input type="text" 
+                       id="answer" 
+                       placeholder="Type your answer..." 
+                       onkeypress="if(event.key === 'Enter') checkAnswer()">
+            </div>
         </div>
-        
+
         <div id="feedback" class="feedback"></div>
+        
         <div id="mistakes" class="mistakes" style="display:none">
-            <h3>Erros:</h3>
+            <h3>Mistakes</h3>
             <div id="mistakesList"></div>
         </div>
     </div>
@@ -111,6 +420,47 @@
         let total = 0;
         let mistakes = [];
         let checked = false;
+        let currentStreak = 0;
+        let bestStreak = 0;
+
+        function updateProgress() {
+            const progress = (usedCombinations.size / totalCombinations) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+
+        function updateStreak(correct) {
+            if (correct) {
+                currentStreak++;
+                bestStreak = Math.max(bestStreak, currentStreak);
+            } else {
+                currentStreak = 0;
+            }
+            document.getElementById('streak').textContent = currentStreak;
+        }
+
+        function updateStats() {
+            const incorrectCount = total - score;
+            const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('incorrect').textContent = incorrectCount;
+            document.getElementById('percent').textContent = `${percentage}`;
+            document.getElementById('remaining').textContent = totalCombinations - usedCombinations.size;
+            updateProgress();
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
 
         function changeTense() {
             const tense = document.getElementById('tenseSelector').value;
@@ -120,6 +470,7 @@
             score = 0;
             total = 0;
             mistakes = [];
+            currentStreak = 0;
             updateStats();
             document.getElementById('mistakes').style.display = 'none';
             document.getElementById('mistakesList').innerHTML = '';
@@ -129,12 +480,11 @@
 
         function getUnusedCombination() {
             if (usedCombinations.size >= totalCombinations) {
-                alert('Você completou todos os verbos! Começando novamente.');
+                alert('You have completed all verbs! Starting over.');
                 usedCombinations.clear();
                 score = 0;
                 total = 0;
-                document.getElementById('score').textContent = '0';
-                document.getElementById('total').textContent = '0';
+                updateStats();
             }
 
             let verb, person;
@@ -154,19 +504,10 @@
             document.getElementById('person').textContent = currentPerson;
             document.getElementById('answer').value = '';
             document.getElementById('feedback').textContent = '';
-            document.getElementById('remaining').textContent = totalCombinations - usedCombinations.size;
+            document.getElementById('feedback').className = 'feedback';
+            updateStats();
             document.getElementById('answer').focus();
             checked = false;
-        }
-
-        function updateStats() {
-            const incorrectCount = total - score;
-            const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
-            
-            document.getElementById('score').textContent = score;
-            document.getElementById('incorrect').textContent = incorrectCount;
-            document.getElementById('percent').textContent = percentage;
-            document.getElementById('remaining').textContent = totalCombinations - usedCombinations.size;
         }
 
         function checkAnswer() {
@@ -177,22 +518,35 @@
 
             const answer = document.getElementById('answer').value.toLowerCase().trim();
             const correct = currentVerb[currentPerson].toLowerCase();
+            const feedbackDiv = document.getElementById('feedback');
             
             if (answer === correct) {
-                document.getElementById('feedback').innerHTML = 
-                    `Correto! ✓<br>
-                    Definição: ${currentVerb.definition}<br>
-                    Pressione Enter para continuar`;
-                document.getElementById('feedback').style.color = 'green';
+                feedbackDiv.innerHTML = `
+                    <div class="feedback-content">
+                        <div class="feedback-icon">✓</div>
+                        <div class="feedback-text">
+                            <strong>Correct!</strong><br>
+                            ${currentVerb.definition}<br>
+                            <small>Press Enter to continue</small>
+                        </div>
+                    </div>`;
+                feedbackDiv.className = 'feedback correct';
                 score++;
+                updateStreak(true);
             } else {
-                document.getElementById('feedback').innerHTML = 
-                    `Incorreto. A resposta correta é: ${correct}<br>
-                    Definição: ${currentVerb.definition}<br>
-                    Pressione Enter para continuar`;
-                document.getElementById('feedback').style.color = 'red';
+                feedbackDiv.innerHTML = `
+                    <div class="feedback-content">
+                        <div class="feedback-icon">✗</div>
+                        <div class="feedback-text">
+                            <strong>The correct answer is: ${correct}</strong><br>
+                            ${currentVerb.definition}<br>
+                            <small>Press Enter to continue</small>
+                        </div>
+                    </div>`;
+                feedbackDiv.className = 'feedback incorrect';
                 mistakes.push(`${currentVerb.infinitive} (${currentPerson}): ${answer} → ${correct}`);
                 updateMistakesList();
+                updateStreak(false);
             }
             
             total++;
@@ -205,9 +559,37 @@
             const mistakesList = document.getElementById('mistakesList');
             if (mistakes.length > 0) {
                 mistakesDiv.style.display = 'block';
-                mistakesList.innerHTML = mistakes.map(mistake => `<div>${mistake}</div>`).join('');
+                mistakesList.innerHTML = mistakes.map(mistake => 
+                    `<div class="mistake-item">${mistake}</div>`
+                ).join('');
             }
         }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                if (!checked) {
+                    checkAnswer();
+                } else {
+                    nextQuestion();
+                }
+            }
+
+            if (e.key === ' ' && document.activeElement !== document.getElementById('answer')) {
+                e.preventDefault();
+                document.getElementById('answer').focus();
+            }
+
+            if (e.key === 'Tab' && e.altKey) {
+                e.preventDefault();
+                const selector = document.getElementById('tenseSelector');
+                selector.selectedIndex = selector.selectedIndex === 0 ? 1 : 0;
+                changeTense();
+            }
+        });
+
+        // Theme toggle
+        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
     </script>
 </body>
 </html>
