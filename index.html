@@ -37,10 +37,38 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
-        @keyframes pulse {
+        @keyframes successPulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        @keyframes streakPulse {
+            0% { transform: scale(1); color: var(--primary-color); }
+            50% { transform: scale(1.1); color: var(--success-color); }
+            100% { transform: scale(1); color: var(--primary-color); }
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
         }
 
         body {
@@ -98,11 +126,29 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             text-align: center;
             border: 1px solid var(--border-color);
-            transition: transform var(--animation-duration) ease;
+            transition: all var(--animation-duration) ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .stat-card:hover {
             transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
         }
 
         .stat-value {
@@ -145,7 +191,6 @@
             margin-bottom: 20px;
             color: var(--primary-color);
             font-weight: bold;
-            animation: pulse 2s infinite;
         }
 
         .person-display {
@@ -272,22 +317,120 @@
         /* Mistakes Section */
         .mistakes {
             margin-top: 30px;
-            padding: 20px;
-            background: var(--card-color);
-            border-radius: 8px;
-            border: 1px solid var(--error-color);
+            display: block;
             animation: slideIn var(--animation-duration) ease;
+            width: 100%;
+            text-align: center;
         }
-
-        .mistakes h3 {
-            color: var(--error-color);
-            margin-top: 0;
+        
+        /* Force grid layout with more specific selector */
+        div#mistakes.mistakes {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
         }
-
-        .mistake-item {
+        
+        /* Alternative approach using CSS Grid with explicit column widths */
+        .mistakes {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+            grid-template-areas: "correct mistakes";
+        }
+        
+        .correct-column {
+            grid-area: correct;
+        }
+        
+        .mistakes-column {
+            grid-area: mistakes;
+        }
+        
+        /* Fallback with explicit widths */
+        .mistakes {
+            display: grid !important;
+            grid-template-columns: 400px 400px !important;
+            justify-content: center;
+        }
+        
+        /* Single list layout */
+        .mistakes {
+            margin-top: 30px;
+            width: 100%;
+            display: block;
+        }
+        
+        .mistakes-column, .correct-column {
+            display: none;
+        }
+        
+        .combined-list {
+            padding: 25px;
+            background: var(--card-color);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .correct-item {
+            color: var(--success-color);
             padding: 10px;
             border-bottom: 1px solid var(--border-color);
             animation: fadeIn var(--animation-duration) ease;
+        }
+        
+        .mistake-item {
+            color: var(--error-color);
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            animation: fadeIn var(--animation-duration) ease;
+        }
+        
+        .no-answers {
+            color: var(--text-color);
+            text-align: center;
+            padding: 20px;
+            opacity: 0.7;
+        }
+
+        .mistakes-column, .correct-column {
+            padding: 20px;
+            background: var(--card-color);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            min-width: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .mistakes-column {
+            border-color: var(--error-color);
+        }
+
+        .correct-column {
+            border-color: var(--success-color);
+        }
+
+        .mistakes-column h3, .correct-column h3 {
+            margin-top: 0;
+        }
+
+        .mistakes-column h3 {
+            color: var(--error-color);
+        }
+
+        .correct-column h3 {
+            color: var(--success-color) !important;
+        }
+
+        .mistake-item, .correct-item {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            animation: fadeIn var(--animation-duration) ease;
+        }
+
+        .correct-item {
+            color: var(--success-color);
         }
 
         /* Responsive Design */
@@ -303,10 +446,268 @@
             .verb-display {
                 font-size: 2em;
             }
+            
+            .combined-list {
+                padding: 15px;
+            }
+        }
+
+        .typo-button {
+            background: var(--card-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .typo-button:hover {
+            background: var(--border-color);
+        }
+
+        .take-back-button {
+            background: var(--card-color);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .take-back-button:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .take-back-button:active {
+            transform: translateY(0);
+        }
+
+        /* Animation Classes */
+        .success-animation {
+            animation: successPulse 0.6s ease-in-out;
+        }
+
+        .shake-animation {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .streak-pulse {
+            animation: streakPulse 0.8s ease-in-out;
+        }
+
+        .bounce-animation {
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        .typing-animation {
+            animation: typing 0.3s ease-in-out;
+        }
+
+        /* Enhanced feedback styles */
+        .feedback.correct {
+            background: linear-gradient(135deg, var(--success-color), #66BB6A);
+            color: white;
+            transform: scale(1.02);
+            transition: all 0.3s ease;
+        }
+
+        .feedback.incorrect {
+            background: linear-gradient(135deg, var(--error-color), #EF5350);
+            color: white;
+            transform: scale(1.02);
+            transition: all 0.3s ease;
+        }
+
+        /* Enhanced input focus */
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+
+        /* Progress bar enhancement */
+        .progress-fill {
+            background: linear-gradient(90deg, var(--primary-color), #42A5F5);
+            box-shadow: 0 0 10px rgba(33, 150, 243, 0.3);
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-color);
+            border-radius: 12px;
+            padding: 0;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: var(--error-color);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .stats-section {
+            margin-bottom: 30px;
+        }
+
+        .stats-section h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stat-label {
+            color: var(--text-color);
+        }
+
+        .difficult-verbs-list, .verb-accuracy-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .verb-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: var(--background-color);
+            border-radius: 6px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .verb-item.difficult {
+            border-left-color: var(--error-color);
+        }
+
+        .verb-item.easy {
+            border-left-color: var(--success-color);
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .clear-btn, .close-modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .clear-btn:hover {
+            background: #d32f2f;
+        }
+
+        .close-modal-btn {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .close-modal-btn:hover {
+            background: #1976d2;
+        }
+
+        /* Reset Link Styles */
+        .reset-link {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.9em;
+            opacity: 0.7;
+            transition: all var(--animation-duration) ease;
+            padding: 8px 12px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .reset-link:hover {
+            color: var(--error-color);
+            opacity: 1;
+            background-color: rgba(244, 67, 54, 0.1);
+            text-decoration: underline;
+        }
+
+        .reset-link:active {
+            color: var(--error-color);
+            opacity: 0.8;
         }
     </style>
 </head>
-<body onload="initTheme(); nextQuestion()">
+<body onload="initTheme(); loadProgress(); nextQuestion()">
     <div class="progress-bar">
         <div class="progress-fill" id="progressFill"></div>
     </div>
@@ -316,6 +717,9 @@
             <button id="themeToggle" class="theme-button">
                 <span class="light-icon">☀️</span>
                 <span class="dark-icon">🌙</span>
+            </button>
+            <button id="statsButton" class="theme-button" onclick="openStatsModal()" title="View Statistics">
+                📊
             </button>
         </div>
 
@@ -344,6 +748,7 @@
             </div>
         </div>
 
+
         <select id="tenseSelector" onchange="changeTense()">
             <option value="pps">Pretérito Perfeito Simples</option>
             <option value="presente">Presente</option>
@@ -361,10 +766,68 @@
         </div>
 
         <div id="feedback" class="feedback"></div>
+        <button id="typoButton" class="typo-button" style="display: none;" onclick="handleTypo()">
+            Typo - Try Again
+        </button>
+        <button id="takeBackButton" class="take-back-button" style="display: inline-block;" onclick="takeBackLastAnswer()">
+            ↶ Take Back
+        </button>
         
-        <div id="mistakes" class="mistakes" style="display:none">
-            <h3>Mistakes</h3>
+        <div id="mistakes" class="mistakes" style="display:block">
             <div id="mistakesList"></div>
+        </div>
+        
+        <!-- Detailed Statistics Modal -->
+        <div id="statsModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Detailed Statistics</h2>
+                    <button class="close-btn" onclick="closeStatsModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="stats-section">
+                        <h3>Session Summary</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Total Time:</span>
+                                <span id="totalTime" class="stat-value">0m 0s</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Best Streak:</span>
+                                <span id="bestStreakDisplay" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Questions Answered:</span>
+                                <span id="totalQuestions" class="stat-value">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-section">
+                        <h3>Most Difficult Verbs</h3>
+                        <div id="difficultVerbs" class="difficult-verbs-list">
+                            <p>Complete at least 2 attempts to see difficulty analysis</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-section">
+                        <h3>Verb Accuracy</h3>
+                        <div id="verbAccuracy" class="verb-accuracy-list">
+                            <p>Statistics will appear as you practice</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="clearProgress()" class="clear-btn">Clear All Progress</button>
+                    <button onclick="closeStatsModal()" class="close-modal-btn">Close</button>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+            <a href="#" id="resetLink" class="reset-link" onclick="resetToZero(); return false;">
+                Start Over
+            </a>
         </div>
     </div>
 
@@ -410,8 +873,8 @@
         ];
 
         const persons = ['eu', 'tu', 'ele/ela/você', 'nós', 'eles/elas/vocês'];
-        const usedCombinations = new Set();
-        const totalCombinations = verbsPPS.length * persons.length;
+        let usedCombinations = new Set();
+        let totalCombinations = verbsPPS.length * persons.length;
 
         let currentVerbs = verbsPPS;
         let currentVerb;
@@ -419,9 +882,18 @@
         let score = 0;
         let total = 0;
         let mistakes = [];
+        let correctAnswers = [];
+        let answerCounter = 0;
         let checked = false;
         let currentStreak = 0;
         let bestStreak = 0;
+        
+        // Detailed statistics tracking
+        let verbStats = {}; // Track stats per verb
+        let verbStatsOrder = []; // Track order of verb stats entries
+        let sessionStartTime = Date.now();
+        let totalSessionTime = 0;
+        let questionStartTime = Date.now();
 
         function updateProgress() {
             const progress = (usedCombinations.size / totalCombinations) * 100;
@@ -429,13 +901,22 @@
         }
 
         function updateStreak(correct) {
+            const streakElement = document.getElementById('streak');
+            
             if (correct) {
                 currentStreak++;
                 bestStreak = Math.max(bestStreak, currentStreak);
+                
+                // Add pulse animation for streak updates
+                streakElement.classList.add('streak-pulse');
+                setTimeout(() => {
+                    streakElement.classList.remove('streak-pulse');
+                }, 800);
             } else {
                 currentStreak = 0;
             }
-            document.getElementById('streak').textContent = currentStreak;
+            
+            streakElement.textContent = currentStreak;
         }
 
         function updateStats() {
@@ -454,6 +935,188 @@
             document.documentElement.setAttribute('data-theme', savedTheme);
         }
 
+        // Local Storage Functions
+        function saveProgress() {
+            const progressData = {
+                score: score,
+                total: total,
+                mistakes: mistakes,
+                correctAnswers: correctAnswers,
+                currentStreak: currentStreak,
+                bestStreak: bestStreak,
+                usedCombinations: Array.from(usedCombinations),
+                verbStats: verbStats,
+                verbStatsOrder: verbStatsOrder,
+                totalSessionTime: totalSessionTime + (Date.now() - sessionStartTime),
+                lastSaved: Date.now()
+            };
+            
+            localStorage.setItem('portugueseVerbTrainer', JSON.stringify(progressData));
+        }
+
+        function loadProgress() {
+            const savedData = localStorage.getItem('portugueseVerbTrainer');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    score = data.score || 0;
+                    total = data.total || 0;
+                    mistakes = data.mistakes || [];
+                    correctAnswers = data.correctAnswers || [];
+                    currentStreak = data.currentStreak || 0;
+                    bestStreak = data.bestStreak || 0;
+                    usedCombinations = new Set(data.usedCombinations || []);
+                    verbStats = data.verbStats || {};
+                    verbStatsOrder = data.verbStatsOrder || [];
+                    totalSessionTime = data.totalSessionTime || 0;
+                    
+                    // Update display
+                    updateStats();
+                    updateMistakesList();
+                    
+                    console.log('Progress loaded from local storage');
+                } catch (e) {
+                    console.error('Error loading progress:', e);
+                }
+            }
+        }
+
+        function clearProgress() {
+            if (confirm('Are you sure you want to clear all progress? This cannot be undone.')) {
+                localStorage.removeItem('portugueseVerbTrainer');
+                location.reload();
+            }
+        }
+
+        function resetToZero() {
+            if (confirm('Are you sure you want to start over? This will reset all your progress to zero.')) {
+                // Reset all variables to initial state
+                score = 0;
+                total = 0;
+                mistakes = [];
+                correctAnswers = [];
+                answerCounter = 0;
+                currentStreak = 0;
+                bestStreak = 0;
+                usedCombinations.clear();
+                verbStats = {};
+                verbStatsOrder = [];
+                totalSessionTime = 0;
+                sessionStartTime = Date.now();
+                
+                // Clear local storage
+                localStorage.removeItem('portugueseVerbTrainer');
+                
+                // Update display
+                updateStats();
+                updateMistakesList();
+                
+                // Reset progress bar
+                document.getElementById('progressFill').style.width = '0%';
+                
+                // Clear feedback and input
+                document.getElementById('feedback').textContent = '';
+                document.getElementById('feedback').className = 'feedback';
+                document.getElementById('typoButton').style.display = 'none';
+                document.getElementById('answer').value = '';
+                
+                // Hide mistakes section
+                document.getElementById('mistakes').style.display = 'none';
+                
+                // Start fresh with a new question
+                nextQuestion();
+                
+                // Show confirmation message
+                const feedbackDiv = document.getElementById('feedback');
+                feedbackDiv.innerHTML = `
+                    <div class="feedback-content">
+                        <div class="feedback-icon">🔄</div>
+                        <div class="feedback-text">
+                            <strong>Progress Reset!</strong><br>
+                            All statistics have been cleared and you're starting fresh.
+                        </div>
+                    </div>`;
+                feedbackDiv.className = 'feedback correct success-animation';
+                
+                // Hide the confirmation after 3 seconds
+                setTimeout(() => {
+                    feedbackDiv.textContent = '';
+                    feedbackDiv.className = 'feedback';
+                }, 3000);
+            }
+        }
+
+        // Detailed Statistics Functions
+        function updateVerbStats(verb, person, correct, timeSpent) {
+            const verbKey = `${verb}-${person}`;
+            
+            if (!verbStats[verbKey]) {
+                verbStats[verbKey] = {
+                    verb: verb,
+                    person: person,
+                    attempts: 0,
+                    correct: 0,
+                    incorrect: 0,
+                    totalTime: 0,
+                    lastAttempt: Date.now(),
+                    difficulty: 0 // 0 = easy, 1 = medium, 2 = hard
+                };
+            }
+            
+            const stats = verbStats[verbKey];
+            stats.attempts++;
+            stats.totalTime += timeSpent || 0;
+            stats.lastAttempt = Date.now();
+            
+            if (correct) {
+                stats.correct++;
+            } else {
+                stats.incorrect++;
+            }
+            
+            // Calculate difficulty based on accuracy
+            const accuracy = stats.correct / stats.attempts;
+            if (accuracy < 0.5) {
+                stats.difficulty = 2; // Hard
+            } else if (accuracy < 0.8) {
+                stats.difficulty = 1; // Medium
+            } else {
+                stats.difficulty = 0; // Easy
+            }
+            
+            // Track the order of this entry
+            verbStatsOrder.push({
+                verbKey: verbKey,
+                verb: verb,
+                person: person,
+                correct: correct,
+                timeSpent: timeSpent || 0
+            });
+        }
+
+        function getVerbDifficulty(verb, person) {
+            const verbKey = `${verb}-${person}`;
+            return verbStats[verbKey]?.difficulty || 0;
+        }
+
+        function getMostDifficultVerbs() {
+            return Object.values(verbStats)
+                .filter(stat => stat.attempts >= 2)
+                .sort((a, b) => {
+                    const accuracyA = a.correct / a.attempts;
+                    const accuracyB = b.correct / b.attempts;
+                    return accuracyA - accuracyB;
+                })
+                .slice(0, 5);
+        }
+
+        function getVerbAccuracy(verb, person) {
+            const verbKey = `${verb}-${person}`;
+            const stats = verbStats[verbKey];
+            if (!stats || stats.attempts === 0) return null;
+            return Math.round((stats.correct / stats.attempts) * 100);
+        }
+
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -465,11 +1128,14 @@
         function changeTense() {
             const tense = document.getElementById('tenseSelector').value;
             currentVerbs = tense === 'pps' ? verbsPPS : verbsPresente;
+            totalCombinations = currentVerbs.length * persons.length;
             
             usedCombinations.clear();
             score = 0;
             total = 0;
             mistakes = [];
+            correctAnswers = [];
+            answerCounter = 0;
             currentStreak = 0;
             updateStats();
             document.getElementById('mistakes').style.display = 'none';
@@ -500,13 +1166,38 @@
         function nextQuestion() {
             [currentVerb, currentPerson] = getUnusedCombination();
             
-            document.getElementById('verb').textContent = currentVerb.infinitive;
-            document.getElementById('person').textContent = currentPerson;
+            // Reset question timer
+            questionStartTime = Date.now();
+            
+            // Add typing animation to verb display
+            const verbElement = document.getElementById('verb');
+            const personElement = document.getElementById('person');
+            
+            verbElement.classList.add('typing-animation');
+            personElement.classList.add('typing-animation');
+            
+            setTimeout(() => {
+                verbElement.textContent = currentVerb.infinitive;
+                personElement.textContent = currentPerson;
+                verbElement.classList.remove('typing-animation');
+                personElement.classList.remove('typing-animation');
+            }, 150);
+            
             document.getElementById('answer').value = '';
             document.getElementById('feedback').textContent = '';
             document.getElementById('feedback').className = 'feedback';
+            document.getElementById('typoButton').style.display = 'none';
+            document.getElementById('takeBackButton').style.display = 'none';
             updateStats();
-            document.getElementById('answer').focus();
+            
+            // Add bounce animation to input field
+            const answerInput = document.getElementById('answer');
+            answerInput.classList.add('bounce-animation');
+            setTimeout(() => {
+                answerInput.classList.remove('bounce-animation');
+                answerInput.focus();
+            }, 300);
+            
             checked = false;
         }
 
@@ -519,6 +1210,10 @@
             const answer = document.getElementById('answer').value.toLowerCase().trim();
             const correct = currentVerb[currentPerson].toLowerCase();
             const feedbackDiv = document.getElementById('feedback');
+            const typoButton = document.getElementById('typoButton');
+            
+            // Track time spent on this question
+            const timeSpent = Date.now() - questionStartTime;
             
             if (answer === correct) {
                 feedbackDiv.innerHTML = `
@@ -530,9 +1225,24 @@
                             <small>Press Enter to continue</small>
                         </div>
                     </div>`;
-                feedbackDiv.className = 'feedback correct';
+                feedbackDiv.className = 'feedback correct success-animation';
+                typoButton.style.display = 'none';
+                document.getElementById('takeBackButton').style.display = 'inline-block';
                 score++;
+                correctAnswers.push({ text: `${currentVerb.infinitive} (${currentPerson}): ${correct}`, order: answerCounter++ });
                 updateStreak(true);
+                updateMistakesList();
+                
+                // Update detailed statistics
+                updateVerbStats(currentVerb.infinitive, currentPerson, true, timeSpent);
+                
+                // Save progress
+                saveProgress();
+                
+                // Add confetti effect for milestones
+                if (score % 5 === 0) {
+                    createConfetti();
+                }
             } else {
                 feedbackDiv.innerHTML = `
                     <div class="feedback-content">
@@ -543,10 +1253,24 @@
                             <small>Press Enter to continue</small>
                         </div>
                     </div>`;
-                feedbackDiv.className = 'feedback incorrect';
-                mistakes.push(`${currentVerb.infinitive} (${currentPerson}): ${answer} → ${correct}`);
+                feedbackDiv.className = 'feedback incorrect shake-animation';
+                typoButton.style.display = 'block';
+                document.getElementById('takeBackButton').style.display = 'inline-block';
+                mistakes.push({ text: `${currentVerb.infinitive} (${currentPerson}): ${answer} → ${correct}`, order: answerCounter++ });
                 updateMistakesList();
                 updateStreak(false);
+                
+                // Update detailed statistics
+                updateVerbStats(currentVerb.infinitive, currentPerson, false, timeSpent);
+                
+                // Save progress
+                saveProgress();
+                
+                // Shake the input field
+                document.getElementById('answer').classList.add('shake-animation');
+                setTimeout(() => {
+                    document.getElementById('answer').classList.remove('shake-animation');
+                }, 500);
             }
             
             total++;
@@ -557,12 +1281,155 @@
         function updateMistakesList() {
             const mistakesDiv = document.getElementById('mistakes');
             const mistakesList = document.getElementById('mistakesList');
-            if (mistakes.length > 0) {
-                mistakesDiv.style.display = 'block';
-                mistakesList.innerHTML = mistakes.map(mistake => 
-                    `<div class="mistake-item">${mistake}</div>`
-                ).join('');
+            
+            mistakesDiv.style.display = 'block';
+            
+            // Create combined list with all answers in reverse chronological order
+            const allAnswers = [];
+            
+            // Add correct answers
+            correctAnswers.forEach(answer => {
+                allAnswers.push({ type: 'correct', text: answer.text, order: answer.order });
+            });
+            
+            // Add mistakes
+            mistakes.forEach(mistake => {
+                allAnswers.push({ type: 'mistake', text: mistake.text, order: mistake.order });
+            });
+            
+            // Sort by order (newest first) and create HTML
+            const sortedAnswers = allAnswers.sort((a, b) => b.order - a.order);
+            
+            if (sortedAnswers.length > 0) {
+                mistakesList.innerHTML = `
+                    <div class="combined-list">
+                        ${sortedAnswers.map(item => 
+                            `<div class="${item.type}-item">${item.text}</div>`
+                        ).join('')}
+                    </div>
+                `;
+            } else {
+                mistakesList.innerHTML = `
+                    <div class="combined-list">
+                        <div class="no-answers">No answers yet!</div>
+                    </div>
+                `;
             }
+        }
+
+        function handleTypo() {
+            document.getElementById('answer').value = '';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('typoButton').style.display = 'none';
+            document.getElementById('takeBackButton').style.display = 'none';
+            checked = false;
+            
+            if (mistakes.length > 0) {
+                mistakes.pop();
+            }
+            
+            if (correctAnswers.length > 0) {
+                correctAnswers.pop();
+            }
+            
+            updateMistakesList();
+            
+            if (total > 0) total--;
+            updateStats();
+        }
+
+        function takeBackLastAnswer() {
+            if (total === 0) {
+                alert('No answers to take back!');
+                return;
+            }
+
+            // Remove the last answer from the appropriate array
+            let removedAnswer = null;
+            if (mistakes.length > 0 && correctAnswers.length > 0) {
+                // Check which one was added last based on order
+                const lastMistake = mistakes[mistakes.length - 1];
+                const lastCorrect = correctAnswers[correctAnswers.length - 1];
+                
+                if (lastMistake.order > lastCorrect.order) {
+                    removedAnswer = mistakes.pop();
+                } else {
+                    removedAnswer = correctAnswers.pop();
+                    score--; // Decrease score if it was correct
+                }
+            } else if (mistakes.length > 0) {
+                removedAnswer = mistakes.pop();
+            } else if (correctAnswers.length > 0) {
+                removedAnswer = correctAnswers.pop();
+                score--; // Decrease score if it was correct
+            }
+
+            // Remove the last verb stats entry
+            if (verbStatsOrder.length > 0) {
+                const lastVerbStats = verbStatsOrder.pop();
+                const verbKey = lastVerbStats.verbKey;
+                
+                if (verbStats[verbKey]) {
+                    const stats = verbStats[verbKey];
+                    stats.attempts--;
+                    stats.totalTime -= lastVerbStats.timeSpent;
+                    
+                    if (lastVerbStats.correct) {
+                        stats.correct--;
+                    } else {
+                        stats.incorrect--;
+                    }
+                    
+                    // Recalculate difficulty
+                    if (stats.attempts > 0) {
+                        const accuracy = stats.correct / stats.attempts;
+                        if (accuracy < 0.5) {
+                            stats.difficulty = 2; // Hard
+                        } else if (accuracy < 0.8) {
+                            stats.difficulty = 1; // Medium
+                        } else {
+                            stats.difficulty = 0; // Easy
+                        }
+                    } else {
+                        // If no attempts left, remove the entry entirely
+                        delete verbStats[verbKey];
+                    }
+                }
+            }
+
+            // Reset the current question
+            document.getElementById('answer').value = '';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('typoButton').style.display = 'none';
+            document.getElementById('takeBackButton').style.display = 'none';
+            checked = false;
+
+            // Update statistics
+            total--;
+            updateStats();
+            updateMistakesList();
+
+            // Show confirmation
+            const feedbackDiv = document.getElementById('feedback');
+            feedbackDiv.innerHTML = `
+                <div class="feedback-content">
+                    <div class="feedback-icon">↶</div>
+                    <div class="feedback-text">
+                        <strong>Answer taken back!</strong><br>
+                        Your last answer has been removed from statistics.
+                    </div>
+                </div>`;
+            feedbackDiv.className = 'feedback correct success-animation';
+
+            // Hide confirmation after 2 seconds
+            setTimeout(() => {
+                feedbackDiv.textContent = '';
+                feedbackDiv.className = 'feedback';
+            }, 2000);
+
+            // Save progress
+            saveProgress();
         }
 
         // Keyboard shortcuts
@@ -590,6 +1457,97 @@
 
         // Theme toggle
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+        // Confetti effect function
+        function createConfetti() {
+            const colors = ['#4CAF50', '#2196F3', '#FF9800', '#E91E63', '#9C27B0'];
+            const confettiCount = 50;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '100vh';
+                confetti.style.zIndex = '9999';
+                confetti.style.pointerEvents = 'none';
+                confetti.style.animation = `confetti ${Math.random() * 3 + 2}s linear forwards`;
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+
+        // Statistics Modal Functions
+        function openStatsModal() {
+            updateStatsModal();
+            document.getElementById('statsModal').style.display = 'flex';
+        }
+
+        function closeStatsModal() {
+            document.getElementById('statsModal').style.display = 'none';
+        }
+
+        function updateStatsModal() {
+            // Update session summary
+            const totalTime = totalSessionTime + (Date.now() - sessionStartTime);
+            const minutes = Math.floor(totalTime / 60000);
+            const seconds = Math.floor((totalTime % 60000) / 1000);
+            
+            document.getElementById('totalTime').textContent = `${minutes}m ${seconds}s`;
+            document.getElementById('bestStreakDisplay').textContent = bestStreak;
+            document.getElementById('totalQuestions').textContent = total;
+
+            // Update difficult verbs
+            const difficultVerbs = getMostDifficultVerbs();
+            const difficultVerbsDiv = document.getElementById('difficultVerbs');
+            
+            if (difficultVerbs.length > 0) {
+                difficultVerbsDiv.innerHTML = difficultVerbs.map(verb => {
+                    const accuracy = Math.round((verb.correct / verb.attempts) * 100);
+                    const difficultyClass = verb.difficulty === 2 ? 'difficult' : verb.difficulty === 0 ? 'easy' : '';
+                    return `
+                        <div class="verb-item ${difficultyClass}">
+                            <span>${verb.verb} (${verb.person})</span>
+                            <span>${accuracy}% (${verb.correct}/${verb.attempts})</span>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                difficultVerbsDiv.innerHTML = '<p>Complete at least 2 attempts to see difficulty analysis</p>';
+            }
+
+            // Update verb accuracy list
+            const verbAccuracyDiv = document.getElementById('verbAccuracy');
+            const allVerbs = Object.values(verbStats).sort((a, b) => b.attempts - a.attempts);
+            
+            if (allVerbs.length > 0) {
+                verbAccuracyDiv.innerHTML = allVerbs.slice(0, 10).map(verb => {
+                    const accuracy = Math.round((verb.correct / verb.attempts) * 100);
+                    const difficultyClass = verb.difficulty === 2 ? 'difficult' : verb.difficulty === 0 ? 'easy' : '';
+                    return `
+                        <div class="verb-item ${difficultyClass}">
+                            <span>${verb.verb} (${verb.person})</span>
+                            <span>${accuracy}% (${verb.correct}/${verb.attempts})</span>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                verbAccuracyDiv.innerHTML = '<p>Statistics will appear as you practice</p>';
+            }
+        }
+
+        // Auto-save progress every 30 seconds
+        setInterval(saveProgress, 30000);
+
+        // Save progress when page is about to unload
+        window.addEventListener('beforeunload', saveProgress);
     </script>
 </body>
 </html>
